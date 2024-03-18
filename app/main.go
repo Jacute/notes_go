@@ -29,16 +29,14 @@ func menu2() {
 		blue("========================="))
 }
 
-func printNotes(notes map[string]map[string]interface{}) {
+func printNotes(notes []Note) {
 	if len(notes) == 0 {
 		fmt.Println("No notes :(\n======")
 		return
 	}
 
-	c := 1
-	for name := range notes {
-		fmt.Printf("%d\nAuthor: %s\n"+blue("=======\n")+"Note: %s\nDescription: %s\n"+blue("=======\n"), c, notes[name]["author"], name, notes[name]["description"])
-		c++
+	for index, note := range notes {
+		fmt.Printf(yellow("%d\n")+"Author: %s\n"+blue("=======\n")+"Note: %s\nDescription: %s\n"+blue("=======\n"), index+1, note.author, note.name, note.description)
 	}
 }
 
@@ -68,9 +66,9 @@ func main() {
 
 			if status {
 				isAuthorized = true
-				log.Println("Login successful")
+				log.Println(green("Login successful"))
 			} else {
-				log.Println("Login failed")
+				log.Println(red("Login failed"))
 			}
 		case 2:
 			fmt.Print("Username: ")
@@ -84,21 +82,21 @@ func main() {
 			status := register(db, username, password1, password2)
 			if status {
 				isAuthorized = true
-				log.Println("Registration successful")
+				log.Println(green("Registration successful"))
 			} else {
-				log.Println("Registration failed")
+				log.Println(red("Registration failed"))
 			}
 		case 3:
 			return
 		default:
-			log.Println("Invalid choice. Please select a valid option.")
+			log.Println(red("Invalid choice. Please select a valid option."))
 		}
 		if isAuthorized {
 			break
 		}
 	}
 
-	fmt.Printf("Username: %s\n", username)
+	fmt.Printf("Username: %s\n", cyan(username))
 	menu2()
 	for {
 		fmt.Print("Choice: ")
@@ -113,17 +111,24 @@ func main() {
 			noteName := input()
 
 			fmt.Print("Write note description: ")
-			description := input()
+			noteDescription := input()
 
 			fmt.Print("Note should be private? y/n ")
 			choice := input()
 
-			isPrivate := false
+			is_private := false
 			if choice == "y" {
-				isPrivate = true
+				is_private = true
 			}
 
-			addNote(db, username, noteName, description, isPrivate)
+			note := Note{
+				name:        noteName,
+				description: noteDescription,
+				is_private:  is_private,
+				author:      username,
+			}
+
+			addNote(db, note)
 		case 3:
 			fmt.Println("Write note name: ")
 			noteName := input()
